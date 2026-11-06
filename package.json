@@ -15,7 +15,7 @@
     "type": "git",
     "url": "git+https://github.com/AnJiaqi0926/dsh-plugin-switchboard.git"
   },
-  "homepage": "https://github.com/AnJiaqi0926/dsh-plugin-switchboard.git#readme",
+  "homepage": "https://github.com/AnJiaqi0926/dsh-plugin-switchboard#readme",
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
