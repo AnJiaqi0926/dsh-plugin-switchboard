@@ -1,8 +1,8 @@
 # 提交到 awesome-dsh-plugin 的条目模板。
 # 放进 awesome-dsh-plugin 仓库的 data/plugins/ 目录，文件名 <owner>__<repo>.yml
 # 只有一个文件就是全部投稿，README 由 CI 生成，不要手改。
-url: https://github.com/OWNER/dsh-plugin-switchboard
-name: OWNER/dsh-plugin-switchboard
+url: https://github.com/AnJiaqi0926/dsh-plugin-switchboard
+name: AnJiaqi0926/dsh-plugin-switchboard
 category: ui
 description:
   en: Toggles installed plugins from a sidebar panel, flags entries whose change needs a Host restart, and can restart the Host from the same panel.
