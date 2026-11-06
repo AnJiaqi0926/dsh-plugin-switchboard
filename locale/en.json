@@ -1,0 +1,6 @@
+{
+  "meta": {
+    "title": "Plugin Switchboard",
+    "description": "Toggle installed plugins from the sidebar, see which changes need a Host restart, and relaunch from the same panel."
+  }
+}

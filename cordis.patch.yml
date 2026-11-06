@@ -1,0 +1,3 @@
+- insert:
+    - id: plugin-switchboard
+      name: 'dsh-plugin-switchboard'

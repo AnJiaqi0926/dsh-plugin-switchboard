@@ -1,0 +1,11 @@
+# 提交到 awesome-dsh-plugin 的条目模板。
+# 放进 awesome-dsh-plugin 仓库的 data/plugins/ 目录，文件名 <owner>__<repo>.yml
+# 只有一个文件就是全部投稿，README 由 CI 生成，不要手改。
+url: https://github.com/OWNER/dsh-plugin-switchboard
+name: OWNER/dsh-plugin-switchboard
+category: ui
+description:
+  en: Toggles installed plugins from a sidebar panel, flags entries whose change needs a Host restart, and can restart the Host from the same panel.
+  zh: 在侧边栏面板里一键启停已安装插件，标出需要重启 Host 才生效的改动，并可在同一面板重启 Host。
+# 可选：GitHub 托管的位图卡片图标，不写则回退到作者头像
+# icon: https://raw.githubusercontent.com/OWNER/dsh-plugin-switchboard/main/assets/icon-180.png
