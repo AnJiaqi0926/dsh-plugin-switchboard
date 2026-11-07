@@ -5,6 +5,11 @@ window.__ModuleLoader__.load({
     const h = React.createElement
 
     const API = '/dsh-switchboard'
+    const SECTIONS = [
+      ['official', '官方自带'],
+      ['market', '市场安装'],
+      ['local', '本地导入'],
+    ]
 
     async function call(path, body) {
       const response = await fetch(location.origin + API + path, {
@@ -30,8 +35,8 @@ window.__ModuleLoader__.load({
 
     const CSS = `
       .dsw-sb-panel {
-        position: fixed; left: 14px; bottom: 64px; width: 352px; max-width: calc(100vw - 28px);
-        display: flex; flex-direction: column; max-height: min(66vh, 620px);
+        position: fixed; left: 14px; bottom: 64px; width: 372px; max-width: calc(100vw - 28px);
+        display: flex; flex-direction: column; max-height: min(70vh, 660px);
         background: var(--dsw-alias-bg-overlay, #1b1c1f);
         color: var(--dsw-alias-label-primary, #e8eaed);
         border: 1px solid var(--dsw-alias-border-l1, rgba(255,255,255,.12));
@@ -41,7 +46,7 @@ window.__ModuleLoader__.load({
         animation: dsw-sb-in 170ms cubic-bezier(.2,.8,.25,1);
       }
       @keyframes dsw-sb-in { from { opacity: 0; transform: translateY(8px) scale(.985);} to { opacity:1; transform:none;} }
-      .dsw-sb-head { display:flex; align-items:flex-start; gap:8px; padding:14px 14px 10px; }
+      .dsw-sb-head { display:flex; align-items:flex-start; gap:8px; padding:14px 14px 8px; }
       .dsw-sb-title { font-size:14px; font-weight:600; letter-spacing:.01em; }
       .dsw-sb-sub { margin-top:2px; font-size:11.5px; color: var(--dsw-alias-label-secondary, #9aa0a6); }
       .dsw-sb-close {
@@ -70,6 +75,15 @@ window.__ModuleLoader__.load({
         background: color-mix(in srgb, var(--dsw-alias-brand-primary,#4c8dff) 12%, transparent);
       }
       .dsw-sb-list { overflow:auto; padding: 2px 8px 8px; flex:1; scrollbar-width: thin; }
+      .dsw-sb-sec {
+        display:flex; align-items:center; gap:6px; padding:8px 8px 4px; cursor:pointer;
+        font-size:11px; letter-spacing:.04em; color: var(--dsw-alias-label-secondary,#9aa0a6);
+        text-transform:none; user-select:none;
+      }
+      .dsw-sb-sec:hover { color: var(--dsw-alias-label-primary,#e8eaed); }
+      .dsw-sb-sec-arrow { width:10px; display:inline-block; transition: transform 140ms ease; }
+      .dsw-sb-sec[data-collapsed="true"] .dsw-sb-sec-arrow { transform: rotate(-90deg); }
+      .dsw-sb-sec-count { margin-left:auto; opacity:.7; }
       .dsw-sb-row {
         display:flex; align-items:center; gap:9px; padding:8px 8px; border-radius:10px; cursor:pointer;
         transition: background 120ms ease;
@@ -129,6 +143,7 @@ window.__ModuleLoader__.load({
       }
       .dsw-sb-btn:hover { background: var(--dsw-alias-bg-layer-2, rgba(255,255,255,.07)); }
       .dsw-sb-btn[data-kind="danger"] { margin-left:auto; color: var(--dsw-alias-state-error-primary,#ef5b5b); border-color: color-mix(in srgb, var(--dsw-alias-state-error-primary,#ef5b5b) 40%, transparent); }
+      .dsw-sb-btn[data-kind="primary"] { color: var(--dsw-alias-brand-primary,#4c8dff); border-color: color-mix(in srgb, var(--dsw-alias-brand-primary,#4c8dff) 45%, transparent); }
       .dsw-sb-note { padding: 8px 14px 0; font-size:11px; color: var(--dsw-alias-label-secondary,#9aa0a6); }
       .dsw-sb-toast {
         position:absolute; left:50%; bottom:14px; transform:translateX(-50%);
@@ -138,13 +153,26 @@ window.__ModuleLoader__.load({
         box-shadow: 0 6px 18px rgba(0,0,0,.3); animation: dsw-sb-in 140ms ease;
       }
       .dsw-sb-empty { padding: 26px 16px; text-align:center; color: var(--dsw-alias-label-secondary,#9aa0a6); font-size:12px; }
+      .dsw-sb-card {
+        margin: 4px 8px 8px; padding:10px 11px; border-radius:12px;
+        border:1px solid var(--dsw-alias-border-l1, rgba(255,255,255,.1));
+        background: var(--dsw-alias-bg-layer-1, rgba(255,255,255,.03));
+      }
+      .dsw-sb-card-title { font-size:12.8px; font-weight:560; display:flex; align-items:center; gap:8px; }
+      .dsw-sb-card-spec { font-size:10.5px; color: var(--dsw-alias-label-secondary,#9aa0a6); margin-top:1px; }
+      .dsw-sb-card-desc { font-size:11.5px; color: var(--dsw-alias-label-secondary,#b6bcc4); margin-top:6px; }
+      .dsw-sb-card-actions { display:flex; justify-content:flex-end; margin-top:8px; }
       .dsw-sb-trigger {
         display:flex; align-items:center; justify-content:center; width:30px; height:30px;
-        border-radius:9px; border:0; background:transparent; cursor:pointer;
+        border-radius:9px; border:0; background:transparent; cursor:pointer; position:relative;
         color: var(--dsw-alias-label-secondary,#c9ccd1);
       }
       .dsw-sb-trigger:hover { background: var(--dsw-alias-bg-layer-2, rgba(255,255,255,.08)); color: var(--dsw-alias-label-primary,#fff); }
       .dsw-sb-trigger[data-open="true"] { color: var(--dsw-alias-brand-primary,#4c8dff); background: color-mix(in srgb, var(--dsw-alias-brand-primary,#4c8dff) 14%, transparent); }
+      .dsw-sb-badge {
+        position:absolute; top:3px; right:3px; width:6px; height:6px; border-radius:50%;
+        background: var(--dsw-alias-state-warn-primary, #e0a93b);
+      }
     `
 
     function createStore() {
@@ -156,9 +184,13 @@ window.__ModuleLoader__.load({
         query: '',
         filter: 'all',
         pending: {},
+        collapsed: {},
         toasting: null,
         confirmRestart: false,
         restarting: false,
+        recommend: null,
+        recommendLoading: false,
+        installing: {},
       }
       const listeners = new Set()
       return {
@@ -185,10 +217,9 @@ window.__ModuleLoader__.load({
 
     function toast(store, message) {
       store.set({ toasting: message })
-      const timer = setTimeout(() => {
+      setTimeout(() => {
         if (store.get().toasting === message) store.set({ toasting: null })
       }, 2600)
-      return () => clearTimeout(timer)
     }
 
     function shortName(moduleName) {
@@ -206,13 +237,23 @@ window.__ModuleLoader__.load({
       }
     }
 
+    async function loadRecommend(store) {
+      if (store.get().recommendLoading) return
+      store.set({ recommendLoading: true })
+      try {
+        const data = await call('/recommend')
+        store.set({ recommend: Array.isArray(data && data.items) ? data.items : [], recommendLoading: false })
+      } catch (error) {
+        store.set({ recommend: [], recommendLoading: false })
+        toast(store, '读取推荐失败：' + (error && error.message ? error.message : error))
+      }
+    }
+
     async function toggle(store, plugin) {
       if (plugin.readOnly) return
       const next = !plugin.enabled
       const before = store.get().plugins
-      store.set({
-        plugins: before.map((row) => (row.id === plugin.id ? { ...row, enabled: next } : row)),
-      })
+      store.set({ plugins: before.map((row) => (row.id === plugin.id ? { ...row, enabled: next } : row)) })
       try {
         const data = await call('/toggle', { id: plugin.id, enabled: next })
         const result = (data && data.result) || {}
@@ -235,6 +276,31 @@ window.__ModuleLoader__.load({
       }
     }
 
+    async function install(store, item) {
+      if (store.get().installing[item.spec]) return
+      store.set({ installing: { ...store.get().installing, [item.spec]: true } })
+      toast(store, '正在安装 ' + item.title + '…')
+      try {
+        const data = await call('/install', { spec: item.spec })
+        const result = (data && data.result) || {}
+        if (result.application === 'failed' || result.application === 'cancelled') {
+          toast(store, '安装失败：' + ((result.error && (result.error.diagnostic || result.error.code)) || result.application))
+        } else if (result.application === 'restart-required') {
+          toast(store, '已安装，需重启 Host')
+        } else {
+          toast(store, '已安装 ' + item.title)
+        }
+        await loadRecommend(store)
+        await loadPlugins(store)
+      } catch (error) {
+        toast(store, '安装失败：' + (error && error.message ? error.message : error))
+      } finally {
+        const next = { ...store.get().installing }
+        delete next[item.spec]
+        store.set({ installing: next })
+      }
+    }
+
     async function restartHost(store) {
       if (!store.get().confirmRestart) {
         store.set({ confirmRestart: true })
@@ -253,19 +319,17 @@ window.__ModuleLoader__.load({
       }
     }
 
-    function Trigger(props) {
+    function Trigger() {
       const store = React.useContext(StoreContext)
       const state = useStore(store)
-      const open = state.open
       const pendingCount = Object.keys(state.pending).length
       return h('button', {
         type: 'button',
         className: 'dsw-sb-trigger',
-        style: { position: 'relative' },
-        'data-open': open ? 'true' : 'false',
-        title: open ? '收起插件开关' : '插件开关',
+        'data-open': state.open ? 'true' : 'false',
+        title: state.open ? '收起插件开关' : '插件开关',
         'aria-label': '插件开关',
-        'aria-pressed': open,
+        'aria-pressed': state.open,
         onClick: () => {
           const next = !store.get().open
           store.set({ open: next })
@@ -278,21 +342,12 @@ window.__ModuleLoader__.load({
           h('rect', { x: 2.2, y: 10.8, width: 15.6, height: 4.6, rx: 2.3, stroke: 'currentColor', strokeWidth: 1.35 }),
           h('circle', { cx: 6.3, cy: 13.1, r: 1.35, fill: 'currentColor' }),
         ),
-        pendingCount > 0
-          ? h('span', {
-              style: {
-                position: 'absolute', marginLeft: 14, marginTop: -14,
-                width: 6, height: 6, borderRadius: '50%',
-                background: 'var(--dsw-alias-state-warn-primary, #e0a93b)',
-              },
-            })
-          : null,
+        pendingCount > 0 ? h('span', { className: 'dsw-sb-badge' }) : null,
       )
     }
 
-    function Row(props) {
+    function Row({ plugin }) {
       const store = React.useContext(StoreContext)
-      const { plugin } = props
       const state = useStore(store)
       const needsRestart = Boolean(state.pending[plugin.id])
       const dot = plugin.phase === 'failed'
@@ -336,21 +391,81 @@ window.__ModuleLoader__.load({
       )
     }
 
+    function Section({ origin, label, rows }) {
+      const store = React.useContext(StoreContext)
+      const state = useStore(store)
+      const collapsed = Boolean(state.collapsed[origin])
+      const enabled = rows.filter((row) => row.enabled).length
+      return h('div', null,
+        h('div', {
+          className: 'dsw-sb-sec',
+          'data-collapsed': collapsed ? 'true' : 'false',
+          role: 'button',
+          tabIndex: 0,
+          onClick: () => store.set({ collapsed: { ...store.get().collapsed, [origin]: !collapsed } }),
+          onKeyDown: (event) => {
+            if (event.key === 'Enter' || event.key === ' ') {
+              event.preventDefault()
+              store.set({ collapsed: { ...store.get().collapsed, [origin]: !collapsed } })
+            }
+          },
+        },
+          h('span', { className: 'dsw-sb-sec-arrow' }, '▾'),
+          h('span', null, label),
+          h('span', { className: 'dsw-sb-sec-count' }, enabled + '/' + rows.length),
+        ),
+        collapsed ? null : rows.map((plugin) => h(Row, { key: plugin.id, plugin })),
+      )
+    }
+
+    function Discover() {
+      const store = React.useContext(StoreContext)
+      const state = useStore(store)
+      if (!state.recommend && !state.recommendLoading) loadRecommend(store)
+      const items = state.recommend || []
+      if (state.recommendLoading && items.length === 0) {
+        return h('div', { className: 'dsw-sb-empty' }, '读取推荐…')
+      }
+      if (items.length === 0) {
+        return h('div', { className: 'dsw-sb-empty' }, '推荐的插件都已安装。')
+      }
+      return h('div', null, items.map((item) => {
+        const busy = Boolean(state.installing[item.spec])
+        return h('div', { key: item.spec, className: 'dsw-sb-card' },
+          h('div', { className: 'dsw-sb-card-title' }, item.title),
+          h('div', { className: 'dsw-sb-card-spec' }, item.spec),
+          h('div', { className: 'dsw-sb-card-desc' }, item.description),
+          h('div', { className: 'dsw-sb-card-actions' },
+            h('button', {
+              type: 'button',
+              className: 'dsw-sb-btn',
+              'data-kind': 'primary',
+              disabled: busy,
+              onClick: () => install(store, item),
+            }, busy ? '安装中…' : '安装'),
+          ),
+        )
+      }))
+    }
+
     function Panel() {
       const store = React.useContext(StoreContext)
       const state = useStore(store)
       if (!state.open) return null
       const pendingCount = Object.keys(state.pending).length
       const query = state.query.trim().toLowerCase()
+      const discover = state.filter === 'discover'
       const filtered = state.plugins.filter((plugin) => {
         if (state.filter === 'on' && !plugin.enabled) return false
         if (state.filter === 'off' && plugin.enabled) return false
         if (state.filter === 'pending' && !state.pending[plugin.id]) return false
+        if (state.filter !== 'all' && state.filter !== 'pending' && state.filter !== 'discover' && plugin.origin !== state.filter) return false
         if (!query) return true
-        const haystack = (plugin.title + ' ' + plugin.moduleName).toLowerCase()
-        return haystack.includes(query)
+        return (plugin.title + ' ' + plugin.moduleName).toLowerCase().includes(query)
       })
       const enabledCount = state.plugins.filter((plugin) => plugin.enabled).length
+      const grouped = state.filter === 'all' && !query
+      const chips = [['all', '全部'], ['official', '官方'], ['market', '市场'], ['local', '本地'], ['pending', '待重启'], ['discover', '发现']]
 
       return h('div', {
         className: 'dsw-sb-panel',
@@ -365,9 +480,7 @@ window.__ModuleLoader__.load({
           h('div', null,
             h('div', { className: 'dsw-sb-title' }, '插件开关'),
             h('div', { className: 'dsw-sb-sub' },
-              state.loading
-                ? '读取中…'
-                : state.plugins.length + ' 个插件 · ' + enabledCount + ' 个已启用'),
+              state.loading ? '读取中…' : state.plugins.length + ' 个插件 · ' + enabledCount + ' 个已启用'),
           ),
           h('button', {
             type: 'button',
@@ -379,14 +492,14 @@ window.__ModuleLoader__.load({
         h('div', { className: 'dsw-sb-search' },
           h('input', {
             className: 'dsw-sb-input',
-            placeholder: '搜索插件…',
+            placeholder: discover ? '推荐里搜索…' : '搜索插件…',
             value: state.query,
             autoFocus: true,
             onChange: (event) => store.set({ query: event.target.value }),
           }),
         ),
         h('div', { className: 'dsw-sb-tabs' },
-          ...[['all', '全部'], ['on', '已启用'], ['off', '已停用'], ['pending', '待重启']].map(([key, label]) =>
+          ...chips.map(([key, label]) =>
             h('button', {
               key,
               type: 'button',
@@ -408,21 +521,33 @@ window.__ModuleLoader__.load({
         state.error
           ? h('div', { className: 'dsw-sb-empty' }, h('div', null, '读取失败'), h('div', { style: { marginTop: 6, opacity: .8 } }, state.error))
           : h('div', { className: 'dsw-sb-list' },
-              filtered.length === 0
-                ? h('div', { className: 'dsw-sb-empty' }, state.loading ? '读取中…' : '没有匹配的插件')
-                : filtered.map((plugin) => h(Row, { key: plugin.id, plugin })),
+              discover
+                ? h(Discover, null)
+                : filtered.length === 0
+                  ? h('div', { className: 'dsw-sb-empty' }, state.loading ? '读取中…' : '没有匹配的插件')
+                  : grouped
+                    ? SECTIONS.map(([origin, label]) => {
+                        const rows = filtered
+                          .filter((plugin) => (plugin.origin || 'official') === origin)
+                          .sort((a, b) => Number(b.enabled) - Number(a.enabled) || a.title.localeCompare(b.title, 'zh'))
+                        return rows.length === 0 ? null : h(Section, { key: origin, origin, label, rows })
+                      })
+                    : filtered
+                        .slice()
+                        .sort((a, b) => Number(b.enabled) - Number(a.enabled) || a.title.localeCompare(b.title, 'zh'))
+                        .map((plugin) => h(Row, { key: plugin.id, plugin })),
             ),
         state.restarting
           ? h('div', { className: 'dsw-sb-note' }, '正在结束 Host 进程；若窗口没有自动重开，请重新启动 DeepSeek Harness。')
-          : null,
-        state.confirmRestart && pendingCount === 0
-          ? h('div', { className: 'dsw-sb-note' }, '再次点击「重启 Host」确认。')
           : null,
         h('div', { className: 'dsw-sb-foot' },
           h('button', {
             type: 'button',
             className: 'dsw-sb-btn',
-            onClick: () => loadPlugins(store),
+            onClick: () => {
+              loadPlugins(store)
+              if (state.recommend) loadRecommend(store)
+            },
           }, '刷新'),
           h('button', {
             type: 'button',

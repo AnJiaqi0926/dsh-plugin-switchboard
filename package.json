@@ -1,6 +1,6 @@
 {
   "name": "dsh-plugin-switchboard",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "description": "Sidebar switchboard for installed DSH plugins: toggle rows, spot restart-required changes, relaunch the host.",
   "type": "module",
   "license": "MIT",
@@ -19,6 +19,8 @@
   "exports": {
     ".": "./index.js",
     "./client": "./client.js",
+    "./cordis.patch.yml": "./cordis.patch.yml",
+    "./package.json": "./package.json",
     "./locale/*.json": "./locale/*.json",
     "./icon": "./icon.svg"
   },
@@ -32,7 +34,7 @@
     "LICENSE"
   ],
   "engines": {
-    "dsh": ">=0.2.1"
+    "dsh": ">=0.2.1-rc.1"
   },
   "dsh": {
     "bundle": { "patch": "./cordis.patch.yml" },
